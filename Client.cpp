@@ -17,6 +17,7 @@ void Client::forwardInput() {
     readStdin();
     size_t message_size = buffer.str().length();
     socket.sendMessage(buffer, message_size);
+    socket.shutDownConnection(SHUT_WR);
 }
 
 int Client::establishConnection(std::string host, std::string port) {

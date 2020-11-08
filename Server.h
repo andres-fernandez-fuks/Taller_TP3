@@ -13,25 +13,14 @@
 
 class Server {
 public:
-    int receiveInput();
     int establishConnection(std::string port);
-    void getBuffer();
-    void printMessage(int len);
+    int acceptConnection();
     void setDefaultGetResponse(std::string info_file);
-    void respondToRequest();
-    void sendResponse(std::string response);
-    void printResult();
+    void closeConnection();
 
 private:
     Socket connection_socket = Socket(1);
-    Socket acceptance_socket = Socket(1);
-    std::stringbuf buffer;
-    HTMLParser parser;
-    InfoHandler info_handler;
-    std::string output;
 
-    std::string getStringFromBuffer();
-    HtmlRequest parseInput();
 };
 
 

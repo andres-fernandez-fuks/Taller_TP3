@@ -15,13 +15,16 @@ typedef int (*connection_callback_t)(int sockfd, const struct sockaddr *addr,
 
 class Socket {
 public:
-    Socket(int connection_type);
+    explicit Socket(int connection_type);
     ~Socket();
     int establishConnection(const char* host, const char* port);
     void setConnection(int fd);
-    int acceptConnection(Socket& acceptance_socket);
+    int acceptConnection();
     int receiveMessage(std::stringbuf& buffer);
     int sendMessage(std::stringbuf& buffer, size_t len);
+    void closeConnection(bool should_shutdown);
+    void listenToConnections();
+    void shutDownConnection(int mode);
 
 private:
     int socket_fd;
@@ -34,6 +37,7 @@ private:
     void initializeHints();
     void setConnectionCallback();
     void iterateAddressesForConnecting();
+    bool is_closed = false;
 };
 
 

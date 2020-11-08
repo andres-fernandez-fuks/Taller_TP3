@@ -80,17 +80,12 @@ void Socket::setConnection(int fd) {
     socket_fd = fd;
 }
 
-int Socket::acceptConnection(Socket& acceptance_socket) {
-    if (listen(socket_fd, 1) < 0)
-        return -1;
+int Socket::acceptConnection() {
 
     int acceptance_fd = accept(socket_fd,
                               (struct sockaddr*) &connection_info-> ai_addr,
                                (socklen_t*) &connection_info->ai_addrlen);
-    if (acceptance_fd < 0)
-        throw -1;
-    acceptance_socket.setConnection(acceptance_fd);
-    return 0;
+    return acceptance_fd;
 }
 
 int Socket::receiveMessage(std::stringbuf& buffer) {
@@ -99,6 +94,7 @@ int Socket::receiveMessage(std::stringbuf& buffer) {
     while (true) {
         int bytes_recv = recv(socket_fd, aux_buf, 64, 0);
         if (bytes_recv < 0) {
+            puts("ROMPE ACA");
             throw -1;
         }
         if (bytes_recv == 0)
@@ -132,6 +128,22 @@ int Socket::sendMessage(std::stringbuf& buffer, size_t len) {
         bytes_left -= bytes_written;
     }
     free(array);
-    shutdown(socket_fd, SHUT_WR);
     return 0;
+}
+
+void Socket::closeConnection(bool should_shutdown) {
+    if (is_closed)
+        return;
+    if (should_shutdown)
+        shutdown(socket_fd, SHUT_RDWR);
+    close(socket_fd);
+    is_closed = true;
+}
+
+void Socket::listenToConnections() {
+    listen(socket_fd, 15);
+}
+
+void Socket::shutDownConnection(int mode) {
+    shutdown(socket_fd, mode);
 }
