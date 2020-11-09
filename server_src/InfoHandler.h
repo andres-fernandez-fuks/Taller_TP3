@@ -15,10 +15,10 @@
 
 class InfoHandler {
 public:
-    std::string handleRequest(HtmlRequest& request);
-    std::string handleRequest(GetRequest& request);
-    std::string handleRequest(PostRequest& request);
-    static std::string handleRequest(InvalidRequest& request);
+    std::string handleRequest(const HtmlRequest& request);
+    std::string handleRequest(const GetRequest& request);
+    std::string handleRequest(const PostRequest& request);
+    static std::string handleRequest(const InvalidRequest& request);
     void setDefaultGetResponse(const std::string& file_path);
 private:
     std::map<std::string,std::string> info;

@@ -11,18 +11,14 @@
 class HtmlRequest {
 public:
     void assemble(const std::string& line);
-    std::string getName();
-    std::string getResource();
-    std::string getBody();
-    std::string getProtocol();
     void addLineToBody(const std::string& line);
-    std::string getHeader();
+    std::string operator()(const std::string& attribute_name) const;
 
 private:
-    std::string name = "";
-    std::string resource = "";
-    std::string body = "";
-    std::string protocol = "";
+    std::string method;
+    std::string resource;
+    std::string body;
+    std::string protocol;
 };
 
 

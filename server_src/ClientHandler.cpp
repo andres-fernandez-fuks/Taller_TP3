@@ -43,7 +43,7 @@ std::string ClientHandler::getStringFromBuffer() {
 
 void ClientHandler::respondToRequest() {
     HtmlRequest request = parseInput();
-    output = request.getHeader();
+    output = request("header");
     std::string reply = info_handler.handleRequest(request);
     sendResponse(reply);
     closeConnection(true);

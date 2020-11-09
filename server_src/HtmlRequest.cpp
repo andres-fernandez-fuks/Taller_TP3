@@ -21,7 +21,7 @@ void split(const std::string& str, Container& cont) {
 void HtmlRequest::assemble(const std::string& line) {
     std::vector<std::string> vector;
     split(line, vector);
-    name = vector[0];
+    method = vector[0];
     resource = vector[1];
     protocol = vector[2];
 }
@@ -30,22 +30,16 @@ void HtmlRequest::addLineToBody(const std::string& line) {
     body += line + '\n';
 }
 
-std::string HtmlRequest::getName() {
-    return name;
-}
-
-std::string HtmlRequest::getResource() {
-    return resource;
-}
-
-std::string HtmlRequest::getBody() {
-    return body;
-}
-
-std::string HtmlRequest::getProtocol() {
-    return protocol;
-}
-
-std::string HtmlRequest::getHeader() {
-    return name + ' ' + resource + ' ' + protocol + '\n';
+std::string HtmlRequest::operator()(const std::string& attribute_name) const {
+    if (attribute_name == "method")
+        return method;
+    if (attribute_name == "protocol")
+        return protocol;
+    if (attribute_name == "resource")
+        return resource;
+    if (attribute_name == "body")
+        return body;
+    if (attribute_name == "header")
+        return method + ' ' + resource + ' ' + protocol + '\n';
+    return "";
 }
