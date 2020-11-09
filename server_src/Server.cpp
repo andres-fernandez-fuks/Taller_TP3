@@ -2,7 +2,6 @@
 // Created by andy on 7/11/20.
 //
 
-#include <vector>
 #include <mutex>
 #include <string>
 #include <utility>
@@ -21,7 +20,6 @@ Server::Server(std::string port, std::string default_get_response) :
 Server::~Server() {}
 
 void Server::run() {
-    std::vector<ClientHandler*> clients;
     std::mutex m;
     m.lock();
     while (keep_talking) {
@@ -40,25 +38,9 @@ void Server::run() {
             std::cout << e.what() << std::endl;
             break;
         }
-
-        std::atomic<int> counter(0);
-        for (auto each_client : clients) {
-            if (each_client->isDead()){
-                each_client->join();
-                delete(each_client);
-                clients.erase(clients.begin()+counter);
-            }
-            counter++;
-        }
+        cleanConnections();
     }
-
-    for (auto each_client : clients) {
-        if (!each_client)
-            continue;
-        each_client->stop();
-        each_client->join();
-        delete(each_client);
-    }
+    closeAllConnections();
     m.unlock();
 }
 
@@ -68,4 +50,26 @@ void Server::stopConnections() {
     keep_talking = false;
     socket.closeConnection(true);
     m.unlock();
+}
+
+void Server::cleanConnections() {
+    std::atomic<int> counter(0);
+    for (auto each_client : clients) {
+        if (each_client->isDead()){
+            each_client->join();
+            delete(each_client);
+            clients.erase(clients.begin()+counter);
+        }
+        counter++;
+    }
+}
+
+void Server::closeAllConnections() {
+    for (auto each_client : clients) {
+        if (!each_client)
+            continue;
+        each_client->stop();
+        each_client->join();
+        delete(each_client);
+    }
 }

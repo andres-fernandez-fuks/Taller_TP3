@@ -6,6 +6,7 @@
 #include <cstring>
 #include "Socket.h"
 #include "ConnectionException.h"
+#include "MemoryException.h"
 
 #define CONNECT_TYPE 0
 #define BIND_TYPE 1
@@ -116,7 +117,10 @@ size_t minimum(size_t size_1, size_t size_2) {
 int Socket::sendMessage(std::stringbuf& buffer, size_t len) const {
     size_t counter = 0;
     size_t bytes_left = len;
-    char* array = (char*) malloc(len);
+    char* array;
+    array = (char *) malloc(len);
+    if (!array)
+        throw MemoryException("No se pudo allocar memoria dinámica");
     buffer.sgetn(array, len);
     while (counter < len) {
         size_t send_size = minimum(CHUNK_SIZE, bytes_left);
