@@ -6,25 +6,20 @@
 #include <string>
 #include "Client.h"
 #include "../common_src/ConnectionException.h"
+#include "InputReader.h"
+#include "Printer.h"
 
 #define CHUNK_SIZE 64
 
-void Client::readStdin() {
-    std::string line;
-    while (std::getline(std::cin, line)) {
-        buffer.sputn(line.c_str(), line.length());
-        buffer.sputc('\n');
-    }
-}
-
 void Client::forwardInput() {
-    readStdin();
+    InputReader::readStdin(buffer);
     size_t message_size = buffer.str().length();
     socket.sendMessage(buffer, message_size);
     socket.shutDownConnection(SHUT_WR);
 }
 
-int Client::establishConnection(std::string host, std::string port) {
+int Client::establishConnection(const std::string& host,
+                                const std::string& port) {
     return socket.establishConnection(host.c_str(), port.c_str());
 }
 
@@ -34,13 +29,19 @@ void Client::receiveResponse() {
 }
 
 void Client::printResponse() {
-    size_t len = buffer.str().length();
-    size_t counter = 0;
-    char aux_buffer[CHUNK_SIZE+1];
-    while (counter < len) {
-        int written = buffer.sgetn(aux_buffer, CHUNK_SIZE);
-        aux_buffer[written] = '\0';
-        std::cout << aux_buffer;
-        counter += written;
+    Printer::print(buffer);
+}
+
+int Client::handleRequest(const std::string& host, const std::string& port) {
+    try {
+        establishConnection(host, port);
+        forwardInput();
+        receiveResponse();
+        printResponse();
     }
+    catch(ConnectionException& e) {
+        std::cout << e.what() << std::endl;
+        return 1;
+    }
+    return 0;
 }

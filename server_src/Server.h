@@ -7,11 +7,10 @@
 
 #include <string>
 
-
 class Server {
 public:
     static int handleRequests(const std::string& port,
-                       const std::string& default_get_response);
+                       const std::string& info_file);
 };
 
 

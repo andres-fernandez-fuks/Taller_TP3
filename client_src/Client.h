@@ -13,14 +13,14 @@
 class Client {
 public:
     void forwardInput();
-    int establishConnection(std::string host, std::string port);
+    int establishConnection(const std::string& host, const std::string& port);
     void receiveResponse();
     void printResponse();
+    int handleRequest(const std::string& host, const std::string& port);
     
 private:
     Socket socket = Socket(0);
     std::stringbuf buffer;
-    void readStdin();
 };
 
 

@@ -8,16 +8,27 @@
 #include "RequestsHandler.h"
 #include "InputChecker.h"
 #include "../common_src/ConnectionException.h"
+#include "FileReader.h"
+#include "FileException.h"
 
 int Server::handleRequests(const std::string& port,
-                           const std::string& default_get_response) {
-    RequestsHandler request_handler;
+                           const std::string& info_file) {
+    std::string default_get_response;
+
     try {
-        request_handler.setConnection(port, default_get_response);
-        request_handler.start();
+        default_get_response = FileReader::getDefaultResponse(info_file);
+    }
+    catch(FileException& e) {
+        std::cout << e.what() << std::endl;
+        return 1;
+    }
+    RequestsHandler requests_handler;
+    try {
+        requests_handler.setConnection(port, default_get_response);
+        requests_handler.start();
         InputChecker::waitForInput();
-        request_handler.stopConnections();
-        request_handler.join();
+        requests_handler.stopConnections();
+        requests_handler.join();
     }
     catch(ConnectionException& e) {
         std::cout << e.what() << std::endl;
