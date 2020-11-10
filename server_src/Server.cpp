@@ -1,75 +1,27 @@
 //
-// Created by andy on 7/11/20.
+// Created by andy on 10/11/20.
 //
 
-#include <mutex>
+#include <iostream>
 #include <string>
 #include "Server.h"
-#include "ClientHandler.h"
+#include "RequestsHandler.h"
+#include "InputChecker.h"
 #include "../common_src/ConnectionException.h"
 
-Server::Server() : keep_talking(true) {}
-
-Server::~Server() {}
-
-void Server::run() {
-    std::mutex m;
-    m.lock();
-    while (keep_talking) {
-        int client_fd = socket.acceptConnection();
-        if (client_fd < 0)
-            break;
-
-        auto* client_handler = new ClientHandler(client_fd);
-        client_handler-> setDefaultResponse(default_response);
-        clients.push_back(client_handler);
-        try {
-            client_handler-> start();
-        }
-        catch(ConnectionException& e) {
-            break;
-        }
-        cleanConnections();
+int Server::handleRequests(const std::string& port,
+                           const std::string& default_get_response) {
+    RequestsHandler request_handler;
+    try {
+        request_handler.setConnection(port, default_get_response);
+        request_handler.start();
+        InputChecker::waitForInput();
+        request_handler.stopConnections();
+        request_handler.join();
     }
-    closeAllConnections();
-    m.unlock();
-}
-
-void Server::stopConnections() {
-    std::mutex m;
-    m.lock();
-    keep_talking = false;
-    socket.closeConnection(true);
-    m.unlock();
-}
-
-void Server::cleanConnections() {
-    std::atomic<int> counter(0);
-    for (auto each_client : clients) {
-        if (each_client->isDead()){
-            each_client->join();
-            delete(each_client);
-            clients.erase(clients.begin()+counter);
-        }
-        counter++;
+    catch(ConnectionException& e) {
+        std::cout << e.what() << std::endl;
+        return 1;
     }
-}
-
-void Server::closeAllConnections() {
-    for (auto each_client : clients) {
-        if (!each_client)
-            continue;
-        each_client->stop();
-        each_client->join();
-        delete(each_client);
-    }
-    if (keep_talking)
-        throw ConnectionException("Error al intentar establecer la conexion");
-}
-
-void Server::setConnection(const std::string& port,
-                           const std::string& default_get_respomse) {
-    this-> default_response = default_get_respomse;
-    socket.establishConnection(nullptr, port.c_str());
-    socket.listenToConnections();
+    return 0;
 }
