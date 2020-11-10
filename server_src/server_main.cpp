@@ -4,7 +4,6 @@
 
 #include <iostream>
 #include <string>
-#include <mutex>
 #include "Server.h"
 #include "InputChecker.h"
 #include "FileReader.h"
@@ -29,14 +28,16 @@ int main(int argc, char** argv) {
     }
     Server server;
     try {
-            server.setConnection(port, default_get_response);
+        server.setConnection(port, default_get_response);
+        server.start();
+        InputChecker::waitForInput();
+        server.stopConnections();
+        server.join();
     }
     catch(ConnectionException& e) {
         std::cout << e.what() << std::endl;
+        return 1;
     }
-    server.start();
-    InputChecker::waitForInput();
-    server.stopConnections();
-    server.join();
+
     return 0;
 }

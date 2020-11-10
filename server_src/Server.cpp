@@ -4,8 +4,6 @@
 
 #include <mutex>
 #include <string>
-#include <utility>
-#include <iostream>
 #include "Server.h"
 #include "ClientHandler.h"
 #include "../common_src/ConnectionException.h"
@@ -19,10 +17,9 @@ void Server::run() {
     m.lock();
     while (keep_talking) {
         int client_fd = socket.acceptConnection();
-        if (client_fd < 0 && !keep_talking)
-            break;
         if (client_fd < 0)
-            throw ConnectionException("Error al intentar aceptar conexiones");
+            break;
+
         auto* client_handler = new ClientHandler(client_fd);
         client_handler-> setDefaultResponse(default_response);
         clients.push_back(client_handler);
@@ -30,7 +27,6 @@ void Server::run() {
             client_handler-> start();
         }
         catch(ConnectionException& e) {
-            std::cout << e.what() << std::endl;
             break;
         }
         cleanConnections();
@@ -67,6 +63,8 @@ void Server::closeAllConnections() {
         each_client->join();
         delete(each_client);
     }
+    if (keep_talking)
+        throw ConnectionException("Error al intentar establecer la conexion");
 }
 
 void Server::setConnection(const std::string& port,
