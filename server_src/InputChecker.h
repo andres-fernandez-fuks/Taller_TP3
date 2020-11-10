@@ -8,7 +8,7 @@
 
 class InputChecker {
 public:
-    void waitForInput();
+    static void waitForInput();
 };
 
 

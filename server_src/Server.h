@@ -15,12 +15,14 @@
 
 class Server : public Thread {
 public:
-    Server(std::string port, std::string info_file);
+    Server();
     ~Server() override;
     void run() override;
     void stopConnections();
     void cleanConnections();
     void closeAllConnections();
+    void setConnection(const std::string& port,
+                       const std::string& default_get_respomse);
 private:
     Socket socket = Socket(1);
     std::atomic<bool> keep_talking;

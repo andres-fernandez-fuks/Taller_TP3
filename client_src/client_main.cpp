@@ -10,12 +10,13 @@ int main(int argc, char** argv) {
     try {
         client.establishConnection(host, port);
         client.forwardInput();
+        client.receiveResponse();
+        client.printResponse();
     }
-    catch(ConnectionException& e) {
+    catch(std::exception& e) {
         std::cout << e.what() << std::endl;
         return 1;
     }
-    client.receiveResponse();
-    client.printResponse();
+
     return 0;
 }

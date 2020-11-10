@@ -10,12 +10,7 @@
 #include "ClientHandler.h"
 #include "../common_src/ConnectionException.h"
 
-Server::Server(std::string port, std::string default_get_response) :
-                        keep_talking(true) {
-    socket.establishConnection(NULL, port.c_str());
-    socket.listenToConnections();
-    default_response = std::move(default_get_response);
-}
+Server::Server() : keep_talking(true) {}
 
 Server::~Server() {}
 
@@ -72,4 +67,11 @@ void Server::closeAllConnections() {
         each_client->join();
         delete(each_client);
     }
+}
+
+void Server::setConnection(const std::string& port,
+                           const std::string& default_get_respomse) {
+    this-> default_response = default_get_respomse;
+    socket.establishConnection(nullptr, port.c_str());
+    socket.listenToConnections();
 }

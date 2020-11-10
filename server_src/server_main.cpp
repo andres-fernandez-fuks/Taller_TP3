@@ -9,12 +9,14 @@
 #include "InputChecker.h"
 #include "FileReader.h"
 #include "FileException.h"
+#include "../common_src/ConnectionException.h"
 
 int main(int argc, char** argv) {
     if (argc != 3) {
+        puts("Cantidad incorrecta de argumentos");
         return 1;
     }
-    std::mutex m;
+
     std::string port = argv[1];
     std::string info_file = argv[2];
     std::string default_get_response;
@@ -25,13 +27,16 @@ int main(int argc, char** argv) {
         std::cout << e.what() << std::endl;
         return 1;
     }
-    Server server(port, default_get_response);
+    Server server;
+    try {
+            server.setConnection(port, default_get_response);
+    }
+    catch(ConnectionException& e) {
+        std::cout << e.what() << std::endl;
+    }
     server.start();
-    m.lock();
-    InputChecker checker;
-    checker.waitForInput();
+    InputChecker::waitForInput();
     server.stopConnections();
-    m.unlock();
     server.join();
     return 0;
 }

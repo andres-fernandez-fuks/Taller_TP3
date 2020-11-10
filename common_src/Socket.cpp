@@ -6,7 +6,6 @@
 #include <cstring>
 #include "Socket.h"
 #include "ConnectionException.h"
-#include "MemoryException.h"
 
 #define CONNECT_TYPE 0
 #define BIND_TYPE 1
@@ -109,31 +108,28 @@ int Socket::receiveMessage(std::stringbuf& buffer) const {
 }
 
 size_t minimum(size_t size_1, size_t size_2) {
-    if (size_1 < size_2)
-        return size_1;
-    return size_2;
+   return (size_1 < size_2) ? size_1 : size_2;
 }
 
 int Socket::sendMessage(std::stringbuf& buffer, size_t len) const {
     size_t counter = 0;
     size_t bytes_left = len;
-    char* array;
-    array = (char *) malloc(len);
-    if (!array)
-        throw MemoryException("No se pudo allocar memoria dinámica");
-    buffer.sgetn(array, len);
+    char array[CHUNK_SIZE];
     while (counter < len) {
         size_t send_size = minimum(CHUNK_SIZE, bytes_left);
-        int bytes_written = send(socket_fd, &array[counter], send_size,
-                                 MSG_NOSIGNAL);
-        if (bytes_written < 0){
-        	free(array);
-            throw ConnectionException("Error en el envío del mensaje");
+        buffer.sgetn(array, send_size);
+        int bytes_written = 0;
+        while (bytes_written < (int) send_size) {
+            int sent = send(socket_fd, &array[bytes_written],
+                            send_size-bytes_written, MSG_NOSIGNAL);
+            if (sent < 0)
+                throw ConnectionException("Error en el envío del mensaje");
+            bytes_written += sent;
         }
-        counter += bytes_written;
+        memset(array, 0, CHUNK_SIZE);
+        counter += send_size;
         bytes_left -= bytes_written;
     }
-    free(array);
     return counter;
 }
 
