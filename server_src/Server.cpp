@@ -22,17 +22,17 @@ int Server::handleRequests(const std::string& port,
         std::cout << e.what() << std::endl;
         return 1;
     }
-    RequestsHandler requests_handler;
+    RequestsHandler requests_handler(port, default_get_response);
+    int result = 0;
     try {
-        requests_handler.setConnection(port, default_get_response);
         requests_handler.start();
         InputChecker::waitForInput();
-        requests_handler.stopConnections();
-        requests_handler.join();
     }
     catch(ConnectionException& e) {
         std::cout << e.what() << std::endl;
-        return 1;
+        result = 1;
     }
-    return 0;
+    requests_handler.stopConnections();
+    requests_handler.join();
+    return result;
 }

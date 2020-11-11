@@ -15,18 +15,19 @@
 
 class RequestsHandler : public Thread {
 public:
-    RequestsHandler();
+    RequestsHandler(const std::string& port,
+                    const std::string& default_get_response);
     ~RequestsHandler() override;
     void run() override;
     void stopConnections();
     void cleanConnections();
     void closeAllConnections();
-    void setConnection(const std::string& port,
-                       const std::string& default_get_respomse);
+
 private:
     Socket socket = Socket(1);
     std::atomic<bool> keep_talking;
     std::string default_response;
+    std::string port;
     std::vector<ClientHandler*> clients;
 };
 

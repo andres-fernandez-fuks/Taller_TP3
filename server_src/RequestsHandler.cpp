@@ -8,13 +8,20 @@
 #include "ClientHandler.h"
 #include "../common_src/ConnectionException.h"
 
-RequestsHandler::RequestsHandler() : keep_talking(true) {}
+RequestsHandler::RequestsHandler(const std::string& port,
+                                 const std::string& default_get_response) :
+                                 keep_talking(true) {
+    this-> default_response = default_get_response;
+    this-> port = port;
+}
 
 RequestsHandler::~RequestsHandler() {}
 
 void RequestsHandler::run() {
     std::mutex m;
     m.lock();
+    socket.establishConnection(nullptr, port.c_str());
+    socket.listenToConnections();
     while (keep_talking) {
         int client_fd = socket.acceptConnection();
         if (client_fd < 0)
@@ -65,11 +72,4 @@ void RequestsHandler::closeAllConnections() {
     }
     if (keep_talking)
         throw ConnectionException("Error al intentar establecer la conexion");
-}
-
-void RequestsHandler::setConnection(const std::string& port,
-                                    const std::string& default_get_respomse) {
-    this-> default_response = default_get_respomse;
-    socket.establishConnection(nullptr, port.c_str());
-    socket.listenToConnections();
 }
