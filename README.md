@@ -17,7 +17,7 @@ En primera instancia, el funcionamiento del programa puede dividirse en dos comp
 
 El funcionamiento del Cliente es bastante más sencillo, y se muestra en el siguiente diagrama:
 
-![Captura](capturas/secuenciaCliente.png)
+![Captura](capturas/secuenciaClient.png)
 
 El Cliente tiene instanciado un std::stringbuf buffer, el cual le envía a un InputReader para que le agregue el contenido de Stdin.
 
@@ -35,7 +35,7 @@ El funcionamiento del Servidor es un poco más complejo, por la utilización de 
 
 1 - El proceso del Servidor es ejecutado en el main_thread del programa. La secuencia es relativamente simple:
 
-![Captura](capturas/secuenciaServidor.png)
+![Captura](capturas/secuenciaServer.png)
 
 El Servidor le indica al FileReader que abra el archivo info_file recibido por parámetro, y que de ahí obtenga la que será la respuesta por defecto para las GetRequests. Si en este paso el FileReader lanza una FileException, el Servidor la atrapa y retorna 1.
 
@@ -47,7 +47,7 @@ En el último paso, se haya lanzado o no una ConnectionException, el Servidor le
 
 2 - El RequestsHandler inicia su proceso durante el desarrollo del main_thread, y se encarga de atender las requests que van llegando de la siguiente forma:
 
-![Captura](capturas/secuenciaRequestHandler.png)
+![Captura](capturas/secuenciaRequestsHandler.png)
 
 El RequestsHandler le indica al socket que tiene instanciado que inicialice la conexión con el puerto recibido al inicilizarse y que haga el listen correspondiente.
 
