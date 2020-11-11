@@ -84,16 +84,11 @@ Por último, el Cliente imprime el encabezado de la request recibida por pantall
 
 Las principales dificultades que presentó el trabajo fueron:
 
-* La introducción de un nuevo lenguaje que de por sí es bastante complejo como C++, y el hecho de pasar de un lenguaje de programación estructurada a uno orientado a objetos (aunque en el TP 1 básicamente se buscó simular una orientación a objetos).
+* El pasaje de la modelización de los Clientes y Servidores de C a C++. Si bien cuando lo hicimos en C, lo hicimos relativamente orientado a objetos, el pasaje a C++ tuvo sus dificultades, principalmente a la hora de determinar si era o no conveniente seguir usando o no el heap, y a la hora de decidir la forma de enviar los mensajes por el buffer. Utilicé para esto la clase std::stringbuf, pero me encontré con algunas limitaciones en el camino. Obviamente, esto no fue más difícil del trabajo, pero sí me tomó más tiempo del que había previsto.
 
-* La complejidad propia de C++ en cuanto a referencias, punteros, move semantics, etc. Principalmente fue complicado tener que dejar de usar punteros para darle prioridad a las referencias, teniendo en cuenta las restricciones propias de las referencias (no pueden ser NULL, no pueden declararse sin definirse...).
+* Seguir adaptándome a las cuestiones propias de C++: referencias, movimiento, copia. Seguí utilizando, como había hecho en C, punteros a las funciones bind y connect en los sockets porque no tuve tiempo de probar functors. Sobrecargar el operador () terminó siendo relativamente fácil, aunque no sé si lo hice de acuerdo a lo que se esperaba.
 
-* Entender las cuestiones básicas del funcionamiento de los threads. Es un tema completamente nuevo y, aunque se nota que lo pedido en este TP es relativamente básico, entender bien cómo funcionan los threads, los mutex y los locks tiene su complejidad.
-
-* Respetar lós conceptos de la orientación a objetos, en cuanto a la lógica de la abstracción de los objetos, no sobrecargar a un sólo objeto con muchas responsabilidades, tratar de tener alta cohesión y baja dependencia.
-
-* Lo resultante de mezclar todo lo anterior. Por ejemeplo, en un momento quise pasar por referencia a los repositorios al objeto Validador, para que los tuviera como atributos. Pero cuando quería guardarlos, no podía utilizar el operador =. Los repositorios tenían como atributo un mutex, lo que destruía el operador = por defecto. Quise sobrecargar el operador = de los repositorios, pero no sabía cómo hacer para pasar el mutex al nuevo objeto dentro de la sobrecarga. Finalmente, decidí dos cosas: que los repositorios no tuvieran un mutex como atributo, ya que lo usaban en un sólo método, y que el Validador tampoco tuviera a los repositorios como atributos, sino que se pasaran dentro de un sólo método. Podría haber hecho una sola de estas dos cosas, pero me pareció que tenía más sentido hacer ambos cambios.
-
+* La parte más difícil fue la relacionada al manejo de multithreads. Yo había implementado en C a cada Server para que tuviera instanciados dos sockets, el de conexión y el aceptador, por lo que para este TP tuve que cambiar esa lógica que no podía adaptarse a lo pedido por el enunciado. Es mucho más difícil tratar de seguir un proceso que tiene más de un thread que uno que sólo tiene uno, aunque el debugger de CLion me ayudó bastante.
 
 
 
