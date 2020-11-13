@@ -2,11 +2,9 @@
 // Created by andy on 5/11/20.
 //
 
-#include <fstream>
 #include <string>
 #include <utility>
 #include "InfoHandler.h"
-#include "File.h"
 
 
 std::string InfoHandler::handleRequest(const GetRequest& request) {

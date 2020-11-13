@@ -14,10 +14,10 @@ class ConnectionException : std::exception {
 public:
     explicit ConnectionException(const char* description) noexcept;
     const char* what() const noexcept override;
-    virtual ~ConnectionException() noexcept;
+    ~ConnectionException() noexcept override;
     
 private:
-    char msg_error[BUF_LEN];
+    char msg_error[BUF_LEN] = "";
 };
 
 #endif //TP_3_CONNECTIONEXCEPTION_H

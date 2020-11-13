@@ -5,7 +5,6 @@
 #include "FileReader.h"
 #include <string>
 #include "File.h"
-#include <utility>
 
 std::string FileReader::getDefaultResponse(const std::string& file_path) {
     try {

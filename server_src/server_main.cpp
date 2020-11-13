@@ -2,11 +2,7 @@
 // Created by andy on 5/11/20.
 //
 
-#include <iostream>
 #include <string>
-#include "FileReader.h"
-#include "FileException.h"
-
 #include "Server.h"
 
 int main(int argc, char** argv) {

@@ -1,7 +1,5 @@
-#include <iostream>
 #include <string>
 #include "Client.h"
-#include "../common_src/ConnectionException.h"
 
 int main(int argc, char** argv) {
     Client client;

@@ -54,7 +54,7 @@ void setBindingOptions(int connection_type, int socket_fd) {
 int Socket::iterateAddressesForConnecting() {
     struct addrinfo* address;
     setBindingOptions(connection_type, socket_fd);
-    for (address = results; address != NULL; address = address->ai_next) {
+    for (address = results; address != nullptr; address = address->ai_next) {
         socket_fd = socket(address->ai_family, address->ai_socktype,
                                  address->ai_protocol);
         if (socket_fd == -1)
@@ -71,7 +71,7 @@ int Socket::iterateAddressesForConnecting() {
 int Socket::establishConnection(const char* host, const char* port) {
     int search;
     initializeHints();
-    search = getaddrinfo(nullptr, port, &hints, &results);
+    search = getaddrinfo(host, port, &hints, &results);
     if (search != 0)
         printf("%s\n", gai_strerror(search));
     int val_connection = iterateAddressesForConnecting();
@@ -84,8 +84,8 @@ void Socket::setConnection(int fd) {
     socket_fd = fd;
 }
 
-int Socket::acceptConnection() {
-    int acceptance_fd = accept(socket_fd, NULL, NULL);
+int Socket::acceptConnection() const {
+    int acceptance_fd = accept(socket_fd, nullptr, nullptr);
     return acceptance_fd;
 }
 

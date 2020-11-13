@@ -9,8 +9,8 @@
 
 class Thread {
 public:
-    Thread();
-    virtual ~Thread() {}
+    Thread() = default;
+    virtual ~Thread() = default;
     void start();
     void join();
     virtual void run() = 0;

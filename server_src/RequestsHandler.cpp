@@ -2,7 +2,6 @@
 // Created by andy on 7/11/20.
 //
 
-#include <mutex>
 #include <string>
 #include "RequestsHandler.h"
 #include "ClientHandler.h"
@@ -15,11 +14,9 @@ RequestsHandler::RequestsHandler(const std::string& port,
     this-> port = port;
 }
 
-RequestsHandler::~RequestsHandler() {}
+RequestsHandler::~RequestsHandler() = default;
 
 void RequestsHandler::run() {
-    std::mutex m;
-    m.lock();
     socket.establishConnection(nullptr, port.c_str());
     socket.listenToConnections();
     while (keep_talking) {
@@ -27,7 +24,7 @@ void RequestsHandler::run() {
         if (client_fd < 0)
             break;
 
-        auto* client_handler = new ClientHandler(client_fd);
+        auto* client_handler = new ClientHandler(client_fd, m);
         client_handler-> setDefaultResponse(default_response);
         clients.push_back(client_handler);
         try {
@@ -39,15 +36,11 @@ void RequestsHandler::run() {
         cleanConnections();
     }
     closeAllConnections();
-    m.unlock();
 }
 
 void RequestsHandler::stopConnections() {
-    std::mutex m;
-    m.lock();
     keep_talking = false;
     socket.closeConnection(true);
-    m.unlock();
 }
 
 void RequestsHandler::cleanConnections() {

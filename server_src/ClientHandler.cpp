@@ -7,7 +7,8 @@
 #include <mutex>
 #include "ClientHandler.h"
 
-ClientHandler::ClientHandler(int socket_fd) : finished(false) {
+ClientHandler::ClientHandler(int socket_fd, std::mutex& mutex) : m(mutex),
+                                    finished(false){
     socket.setConnection(socket_fd);
 }
 
@@ -32,9 +33,9 @@ void ClientHandler::closeConnection(bool should_shutdown) {
     socket.closeConnection(should_shutdown);
 }
 
-int ClientHandler::receiveInput() {
+void ClientHandler::receiveInput() {
     buffer = std::stringbuf();
-    return socket.receiveMessage(buffer);
+    socket.receiveMessage(buffer);
 }
 
 std::string ClientHandler::getStringFromBuffer() {
@@ -44,13 +45,12 @@ std::string ClientHandler::getStringFromBuffer() {
 void ClientHandler::respondToRequest() {
     HtmlRequest request = parseInput();
     output = request("header");
-    std::string reply = info_handler.handleRequest(request);
-    sendResponse(reply);
+    std::string response = info_handler.handleRequest(request);
+    sendResponse(response);
     closeConnection(true);
 }
 
-void ClientHandler::run() {
-    std::mutex m;
+void  ClientHandler::run() {
     m.lock();
     receiveInput();
     respondToRequest();

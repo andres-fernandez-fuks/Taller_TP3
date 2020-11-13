@@ -8,9 +8,9 @@
 #include <vector>
 #include <atomic>
 #include <string>
-#include "Thread.h"
 #include "../common_src/Socket.h"
 #include "ClientHandler.h"
+#include "Thread.h"
 
 
 class RequestsHandler : public Thread {
@@ -29,6 +29,7 @@ private:
     std::string default_response;
     std::string port;
     std::vector<ClientHandler*> clients;
+    std::mutex m;
 };
 
 

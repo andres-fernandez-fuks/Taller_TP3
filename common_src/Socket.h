@@ -9,6 +9,7 @@
 #include <string>
 #include <netdb.h>
 #include <sstream>
+#include <mutex>
 
 typedef int (*connection_callback_t)(int sockfd, const struct sockaddr *addr,
                                      socklen_t addrlen);
@@ -19,7 +20,7 @@ public:
     ~Socket();
     int establishConnection(const char* host, const char* port);
     void setConnection(int fd);
-    int acceptConnection();
+    int acceptConnection() const;
     int receiveMessage(std::stringbuf& buffer) const;
     int sendMessage(std::stringbuf& buffer, size_t len) const;
     void closeConnection(bool should_shutdown);
