@@ -11,13 +11,13 @@
 
 Nuevo diagrama de clases:
 
-![Captura](capturas/diagramaDeClases.png)
+![Captura](capturas/diagramaDeClases.jpg)
 
 * Mutex: se redujo la sección crítica del código: en lugar de envolver todo el procesos de comunicación del ClientHandler (todo el proceso de recibir la HtmlRequest y responder), se focalizó la sección crítica en las acciones relacionadas a obtener y guardar un recurso, y a la de imprimir el resultado por pantalla del lado del Servidor. Para eso, se creó la clase ProtectedMap y se modificó la clase Printer para que utilice un mutex.
 
 * Sockets: se modificó totalmente el funcionamiento de los sockets, de acuerdo al siguiente diagrama:
 
-![Captura](capturas/sockets.png)
+![Captura](capturas/sockets.jpg)
 
 La idea detrás de esto fue dividir el comportamiento de los sockets de una forma más específica de acuerdo al alcance de sus funciones. El socket del Cliente se encarga tanto de la conexión como de la comunicación con otros sockets, mientras que el Servidor tiene las funciones de conexión y comunicación divididas entre dos sockets. Usé la herramienta de herencia múltiple de C++ (en este caso, usé herencia virtual). Esto me permitió ordenar un poco las funciones de los sockets y hacer el código menos confuso.
 
@@ -32,7 +32,7 @@ La idea detrás de esto fue dividir el comportamiento de los sockets de una form
 
 El siguiente diagrama de clases muestra a alto nivel los principales métodos y atributos de las clases:
 
-![Captura](capturas/diagramaDeClases.png)
+![Captura](capturas/diagramaDeClases.jpg)
 
 En primera instancia, el funcionamiento del programa puede dividirse en dos componentes principales: el Cliente y el Servidor.
 
