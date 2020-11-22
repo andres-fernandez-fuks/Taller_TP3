@@ -13,17 +13,17 @@ Nuevo diagrama de clases:
 
 ![Captura](capturas/diagramaDeClases.jpg)
 
-* Mutex: se redujo la sección crítica del código: en lugar de envolver todo el procesos de comunicación del ClientHandler (todo el proceso de recibir la HtmlRequest y responder), se focalizó la sección crítica en las acciones relacionadas a obtener y guardar un recurso, y a la de imprimir el resultado por pantalla del lado del Servidor. Para eso, se creó la clase ProtectedMap y se modificó la clase Printer para que utilice un mutex.
+* **Mutex**: se redujo la sección crítica del código: en lugar de envolver todo el procesos de comunicación del ClientHandler (todo el proceso de recibir la HtmlRequest y responder), se focalizó la sección crítica en las acciones relacionadas a obtener y guardar un recurso, y a la de imprimir el resultado por pantalla del lado del Servidor. Para eso, se creó la clase ProtectedMap y se modificó la clase Printer para que utilice un mutex.
 
-* Sockets: se modificó totalmente el funcionamiento de los sockets, de acuerdo al siguiente diagrama:
+* **Sockets**: se modificó totalmente el funcionamiento de los sockets, de acuerdo al siguiente diagrama:
 
 ![Captura](capturas/sockets.jpg)
 
 La idea detrás de esto fue dividir el comportamiento de los sockets de una forma más específica de acuerdo al alcance de sus funciones. El socket del Cliente se encarga tanto de la conexión como de la comunicación con otros sockets, mientras que el Servidor tiene las funciones de conexión y comunicación divididas entre dos sockets. Usé la herramienta de herencia múltiple de C++ (en este caso, usé herencia virtual). Esto me permitió ordenar un poco las funciones de los sockets y hacer el código menos confuso.
 
-* Encapsulamiento: la función de aceptación que tiene el ServerSocket, como muestra el diagrama, ahora crea, con el resultado de la función accept, un nuevo AcceptanceSocket que sólo se encarga de comunicarse con otros sockets. De esta forma, evito romper el encapsulamiento de la clase, ya que el manejo del socket_fd se mantiene dentro de los sockets. Para pasar este socket del RequestsHandeler a cada ClientHandler utilizo **std::move**.
+* **Encapsulamiento**: la función de aceptación que tiene el ServerSocket, como muestra el diagrama, ahora crea, con el resultado de la función accept, un nuevo AcceptanceSocket que sólo se encarga de comunicarse con otros sockets. De esta forma, evito romper el encapsulamiento de la clase, ya que el manejo del socket_fd se mantiene dentro de los sockets. Para pasar este socket del RequestsHandeler a cada ClientHandler utilizo **std::move**.
 
-* Strings y buffers: ahora delego la comunicación entre Cliente y Servidor a una clase denominada Messenger. A los Messengers les sigo pasando un buffer (ahora, std::stringstream), pero ahora lo que reciben los sockets para comunicarse son vectores **const char**, con su correspondiente tamaño, lo cual flexibiliza su uso. Los Messengers envían y reciben mensajes en *chunks* de 64 bytes.
+* **Strings y buffers**: ahora delego la comunicación entre Cliente y Servidor a una clase denominada Messenger. A los Messengers les sigo pasando un buffer (ahora, std::stringstream), pero ahora lo que reciben los sockets para comunicarse son vectores **const char**, con su correspondiente tamaño, lo cual flexibiliza su uso. Los Messengers envían y reciben mensajes en *chunks* de 64 bytes.
 
 * Otros cambios menores, de acuerdo a la revisión.
 
