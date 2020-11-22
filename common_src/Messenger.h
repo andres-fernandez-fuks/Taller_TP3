@@ -8,13 +8,11 @@
 
 #include <sstream>
 #include "Socket.h"
-#include "DataSocket.h"
 
 class Messenger {
 public:
-    static int sendMessage(const DataSocket& socket, std::stringstream& buffer);
-    static int receiveMessage(const DataSocket& socket,
-                              std::stringstream& buffer);
+    static int sendMessage(const Socket& socket, std::stringstream& buffer);
+    static int receiveMessage(const Socket& socket, std::stringstream& buffer);
 };
 
 

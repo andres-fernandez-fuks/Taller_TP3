@@ -8,20 +8,19 @@
 #include "../common_src/Socket.h"
 #include "../server_src/HtmlParser.h"
 #include "../common_src/Printer.h"
-#include "../common_src/ClientSocket.h"
 #include <sstream>
 #include <string>
 
 class Client {
 public:
-    Client(const std::string& host, const std::string& port);
     void forwardInput();
+    int establishConnection(const std::string& host, const std::string& port);
     void receiveResponse();
     void printResponse();
-    int handleRequest();
+    int handleRequest(const std::string& host, const std::string& port);
     
 private:
-    ClientSocket socket;
+    Socket socket = Socket(false);
     std::stringstream buffer;
     Printer printer;
 };

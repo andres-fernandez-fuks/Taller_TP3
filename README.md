@@ -6,6 +6,27 @@
 
 **Link al repositorio:** https://github.com/andres912/Taller_TP3
 
+
+### **MODIFICACIONES DE LA REENTREGA**
+
+Nuevo diagrama de clases:
+
+![Captura](capturas/diagramaDeClases.png)
+
+* Mutex: se redujo la sección crítica del código: en lugar de envolver todo el procesos de comunicación del ClientHandler (todo el proceso de recibir la HtmlRequest y responder), se focalizó la sección crítica en las acciones relacionadas a obtener y guardar un recurso, y a la de imprimir el resultado por pantalla del lado del Servidor. Para eso, se creó la clase ProtectedMap y se modificó la clase Printer para que utilice un mutex.
+
+* Sockets: se modificó totalmente el funcionamiento de los sockets, de acuerdo al siguiente diagrama:
+
+![Captura](capturas/sockets.png)
+
+La idea detrás de esto fue dividir el comportamiento de los sockets de una forma más específica de acuerdo al alcance de sus funciones. El socket del Cliente se encarga tanto de la conexión como de la comunicación con otros sockets, mientras que el Servidor tiene las funciones de conexión y comunicación divididas entre dos sockets. Usé la herramienta de herencia múltiple de C++ (en este caso, usé herencia virtual). Esto me permitió ordenar un poco las funciones de los sockets y hacer el código menos confuso.
+
+* Encapsulamiento: la función de aceptación que tiene el ServerSocket, como muestra el diagrama, ahora crea, con el resultado de la función accept, un nuevo AcceptanceSocket que sólo se encarga de comunicarse con otros sockets. De esta forma, evito romper el encapsulamiento de la clase, ya que el manejo del socket_fd se mantiene dentro de los sockets. Para pasar este socket del RequestsHandeler a cada ClientHandler utilizo **std::move**.
+
+* Strings y buffers: ahora delego la comunicación entre Cliente y Servidor a una clase denominada Messenger. A los Messengers les sigo pasando un buffer (ahora, std::stringstream), pero ahora lo que reciben los sockets para comunicarse son vectores **const char**, con su correspondiente tamaño, lo cual flexibiliza su uso. Los Messengers envían y reciben mensajes en *chunks* de 64 bytes.
+
+* Otros cambios menores, de acuerdo a la revisión.
+
 ### **DESCRIPCIÓN**
 
 
@@ -71,7 +92,7 @@ Por último, luego de cerrar todos los threads abiertos, el RequestHandler verif
 
 En su creación, el ClientHandler ya le había indicado al socket que tiene instanciado cuál será el file descriptor correspondiente a su comunicación con el cliente (el cual había recibido por parámetro).
 
-El ClientHandler inicia su ejecución indicándole a su socket que reciba el mensaje del Cliente en su buffer (std::stringbuf) instanciado.
+El ClientHandler inicia su ejecución indicándole al Messenger que reciba el mensaje del Cliente en su buffer (std::stringstream) instanciado.
 
 El ClientHandler le indicará a su HtmlParser que, a partir del mensaje recibido, cree una HtmlRequest. Luego, le enviará esa HtmlRequest al InfoHandler, que será quien se encargué de devolver la respuesta correspondiente al Client Handler. Además, el ClientHandler se guardará el header de la Request ya que luego deberá imprimirlo por pantalla.
 

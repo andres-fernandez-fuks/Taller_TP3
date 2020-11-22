@@ -11,14 +11,15 @@
 
 #define CHUNK_SIZE 64
 
-Client::Client(const std::string& host, const std::string& port) :
-                                                    socket(host, port){
-}
-
 void Client::forwardInput() {
     InputReader::readStdin(buffer);
     Messenger::sendMessage(socket, buffer);
     socket.shutDownConnection(SHUT_WR);
+}
+
+int Client::establishConnection(const std::string& host,
+                                const std::string& port) {
+    return socket.establishConnection(host.c_str(), port.c_str());
 }
 
 void Client::receiveResponse() {
@@ -30,8 +31,9 @@ void Client::printResponse() {
     printer.print(buffer.str());
 }
 
-int Client::handleRequest() {
+int Client::handleRequest(const std::string& host, const std::string& port) {
     try {
+        establishConnection(host, port);
         forwardInput();
         receiveResponse();
         printResponse();

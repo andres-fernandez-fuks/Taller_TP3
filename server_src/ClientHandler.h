@@ -9,16 +9,16 @@
 #include <atomic>
 #include <string>
 #include <thread>
+#include "../common_src/Socket.h"
 #include "HtmlRequest.h"
 #include "HtmlParser.h"
 #include "InfoHandler.h"
 #include "Thread.h"
 #include "../common_src/Printer.h"
-#include "../common_src/AcceptanceSocket.h"
 
 class ClientHandler : public Thread {
 public:
-    explicit ClientHandler(AcceptanceSocket socket,
+    explicit ClientHandler(Socket socket,
                            InfoHandler& handler_ref,
                            Printer& printer_ref);
     ~ClientHandler() override;
@@ -32,7 +32,7 @@ public:
     bool isDead();
 
 private:
-    AcceptanceSocket socket;
+    Socket socket;
     std::stringstream buffer;
     std::string output;
     Printer& printer;

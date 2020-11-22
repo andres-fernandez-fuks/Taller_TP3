@@ -10,16 +10,18 @@
 
 RequestsHandler::RequestsHandler(const std::string& port,
                                  const std::string& default_get_response) :
-                                 socket(port), keep_talking(true) {
+                                 keep_talking(true) {
     info_handler.setDefaultGetResponse(default_get_response);
+    this-> port = port;
 }
 
 RequestsHandler::~RequestsHandler() = default;
 
 void RequestsHandler::run() {
+    socket.establishConnection(nullptr, port.c_str());
     socket.listenToConnections();
     while (keep_talking) {
-        AcceptanceSocket acceptance_socket = socket.acceptConnection();
+        Socket acceptance_socket = socket.acceptConnection();
         if (!acceptance_socket.isConnected())
             break;
 

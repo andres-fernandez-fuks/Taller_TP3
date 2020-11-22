@@ -12,7 +12,6 @@
 #include "ClientHandler.h"
 #include "Thread.h"
 #include "../common_src/Printer.h"
-#include "../common_src/ServerSocket.h"
 
 
 class RequestsHandler : public Thread {
@@ -26,8 +25,9 @@ public:
     void closeAllConnections();
 
 private:
-    ServerSocket socket;
+    Socket socket = Socket(true);
     std::atomic<bool> keep_talking;
+    std::string port;
     std::vector<ClientHandler*> clients;
     InfoHandler info_handler;
     Printer printer;

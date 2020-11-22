@@ -10,7 +10,7 @@
 
 #define CHUNK_SIZE 64
 
-ClientHandler::ClientHandler(AcceptanceSocket socket,
+ClientHandler::ClientHandler(Socket socket,
                              InfoHandler& info_handler_ref,
                              Printer& printer_ref) : socket(std::move(socket)),
      printer(printer_ref), finished(false), info_handler(info_handler_ref) {
