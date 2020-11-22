@@ -8,7 +8,7 @@
 #include "HtmlParser.h"
 
 
-HtmlRequest HtmlParser::parseInput(std::string input) {
+HtmlRequest HtmlParser::parseInput(const std::string& input) {
     std::stringstream stream(input);
     HtmlRequest request;
     std::string line;
@@ -20,7 +20,7 @@ HtmlRequest HtmlParser::parseInput(std::string input) {
             request.assemble(line);
         if (parseBody)
             request.addLineToBody(line);
-        if (line == "")
+        if (line.empty())
             parseBody = true;
         line_counter++;
     }

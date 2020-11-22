@@ -9,7 +9,7 @@
 
 class InputReader {
 public:
-    static void readStdin(std::stringbuf& buffer);
+    static void readStdin(std::stringstream& buffer);
 };
 
 

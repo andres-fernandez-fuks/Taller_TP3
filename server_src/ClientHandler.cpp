@@ -4,29 +4,33 @@
 
 #include <string>
 #include <iostream>
-#include <mutex>
+#include <utility>
 #include "ClientHandler.h"
+#include "../common_src/Messenger.h"
 
-ClientHandler::ClientHandler(int socket_fd, std::mutex& mutex) : m(mutex),
-                                    finished(false){
-    socket.setConnection(socket_fd);
+#define CHUNK_SIZE 64
+
+ClientHandler::ClientHandler(AcceptanceSocket socket,
+                             InfoHandler& info_handler_ref,
+                             Printer& printer_ref) : socket(std::move(socket)),
+     printer(printer_ref), finished(false), info_handler(info_handler_ref) {
 }
 
 ClientHandler::~ClientHandler() = default;
 
 void ClientHandler::sendResponse(const std::string& response) {
-    buffer = std::stringbuf();
-    buffer.sputn(response.c_str(), response.length());
-    socket.sendMessage(buffer, buffer.str().length());
+    buffer = std::stringstream();
+    buffer.write(response.c_str(), response.length());
+    Messenger::sendMessage(socket, buffer);
 }
 
 HtmlRequest ClientHandler::parseInput() {
     std::string input = getStringFromBuffer();
-    return parser.parseInput(input);
+    return HtmlParser::parseInput(input);
 }
 
 void ClientHandler::printResult() {
-    std::cout << output;
+    printer.print(output);
 }
 
 void ClientHandler::closeConnection(bool should_shutdown) {
@@ -34,8 +38,7 @@ void ClientHandler::closeConnection(bool should_shutdown) {
 }
 
 void ClientHandler::receiveInput() {
-    buffer = std::stringbuf();
-    socket.receiveMessage(buffer);
+    Messenger::receiveMessage(socket, buffer);
 }
 
 std::string ClientHandler::getStringFromBuffer() {
@@ -51,16 +54,10 @@ void ClientHandler::respondToRequest() {
 }
 
 void  ClientHandler::run() {
-    m.lock();
     receiveInput();
     respondToRequest();
     printResult();
     finished = true;
-    m.unlock();
-}
-
-void ClientHandler::setDefaultResponse(const std::string& default_response) {
-    info_handler.setDefaultGetResponse(default_response);
 }
 
 bool ClientHandler::isDead() {

@@ -5,12 +5,15 @@
 #ifndef TP_3_PRINTER_H
 #define TP_3_PRINTER_H
 
-
 #include <sstream>
+#include <string>
+#include <mutex>
 
 class Printer {
 public:
-    static void print(std::stringbuf& buffer);
+    void print(const std::string& output);
+private:
+    std::mutex m;
 };
 
 

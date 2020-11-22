@@ -6,35 +6,32 @@
 #include <string>
 #include "Client.h"
 #include "../common_src/ConnectionException.h"
+#include "../common_src/Messenger.h"
 #include "InputReader.h"
-#include "Printer.h"
 
 #define CHUNK_SIZE 64
 
+Client::Client(const std::string& host, const std::string& port) :
+                                                    socket(host, port){
+}
+
 void Client::forwardInput() {
     InputReader::readStdin(buffer);
-    size_t message_size = buffer.str().length();
-    socket.sendMessage(buffer, message_size);
+    Messenger::sendMessage(socket, buffer);
     socket.shutDownConnection(SHUT_WR);
 }
 
-int Client::establishConnection(const std::string& host,
-                                const std::string& port) {
-    return socket.establishConnection(host.c_str(), port.c_str());
-}
-
 void Client::receiveResponse() {
-    buffer = std::stringbuf();
-    socket.receiveMessage(buffer);
+    buffer = std::stringstream();
+    Messenger::receiveMessage(socket, buffer);
 }
 
 void Client::printResponse() {
-    Printer::print(buffer);
+    printer.print(buffer.str());
 }
 
-int Client::handleRequest(const std::string& host, const std::string& port) {
+int Client::handleRequest() {
     try {
-        establishConnection(host, port);
         forwardInput();
         receiveResponse();
         printResponse();

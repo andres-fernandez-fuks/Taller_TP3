@@ -13,7 +13,7 @@
 
 class HtmlParser {
 public:
-    HtmlRequest parseInput(std::string input);
+    static HtmlRequest parseInput(const std::string& input);
 };
 
 

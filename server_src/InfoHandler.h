@@ -8,10 +8,12 @@
 
 #include <string>
 #include <map>
+#include <mutex>
 #include "HtmlRequest.h"
 #include "GetRequest.h"
 #include "PostRequest.h"
 #include "InvalidRequest.h"
+#include "ProtectedMap.h"
 
 class InfoHandler {
 public:
@@ -21,7 +23,7 @@ public:
     static std::string handleRequest(const InvalidRequest& request);
     void setDefaultGetResponse(const std::string& file_path);
 private:
-    std::map<std::string,std::string> info;
+    ProtectedMap info;
     std::string default_response;
 };
 

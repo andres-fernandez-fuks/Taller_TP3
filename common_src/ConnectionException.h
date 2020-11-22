@@ -7,6 +7,7 @@
 
 #include <exception>
 #include <string>
+#include "AcceptanceSocket.h"
 
 #define BUF_LEN 256
 

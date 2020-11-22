@@ -3,29 +3,28 @@
 //
 
 #include <string>
+#include <utility>
 #include "RequestsHandler.h"
 #include "ClientHandler.h"
 #include "../common_src/ConnectionException.h"
 
 RequestsHandler::RequestsHandler(const std::string& port,
                                  const std::string& default_get_response) :
-                                 keep_talking(true) {
-    this-> default_response = default_get_response;
-    this-> port = port;
+                                 socket(port), keep_talking(true) {
+    info_handler.setDefaultGetResponse(default_get_response);
 }
 
 RequestsHandler::~RequestsHandler() = default;
 
 void RequestsHandler::run() {
-    socket.establishConnection(nullptr, port.c_str());
     socket.listenToConnections();
     while (keep_talking) {
-        int client_fd = socket.acceptConnection();
-        if (client_fd < 0)
+        AcceptanceSocket acceptance_socket = socket.acceptConnection();
+        if (!acceptance_socket.isConnected())
             break;
 
-        auto* client_handler = new ClientHandler(client_fd, m);
-        client_handler-> setDefaultResponse(default_response);
+        auto* client_handler = new ClientHandler(std::move(acceptance_socket),
+                                                 info_handler, printer);
         clients.push_back(client_handler);
         try {
             client_handler-> start();

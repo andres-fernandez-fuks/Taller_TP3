@@ -4,6 +4,7 @@
 
 #include <string>
 #include <utility>
+#include <sstream>
 #include "InfoHandler.h"
 
 
@@ -12,7 +13,7 @@ std::string InfoHandler::handleRequest(const GetRequest& request) {
     std::string prot = request("protocol");
     if (resource == "/")
         return prot + " 200 OK\nContent-Type: text/html\n\n" + default_response;
-    if (info.find(resource) != info.end())
+    if (info.contains(resource))
         return prot + " 200 OK\nContent-Type: text/html\n\n"+ info.at(resource);
     return prot + " 404 NOT FOUND\n\n";
 }
@@ -24,17 +25,17 @@ std::string InfoHandler::handleRequest(const PostRequest &request) {
         return protocol + " 403 FORBIDDEN\n\n";
 
     std::string body = request("body");
-    info.insert(std::pair<std::string, std::string>(resource, body));
+    info.insert(resource, body);
     return protocol + " 200 OK\n\n" + body;
 }
 
 std::string InfoHandler::handleRequest(const InvalidRequest &request) {
-    std::string reply;
-    std::string method = request("method");
-    std::string protocol = request("protocol");
-    reply += protocol + " 405 METHOD NOT ALLOWED\n\n";
-    reply += method + " es un comando desconocido\n";
-    return reply;
+    std::stringstream reply_stream;
+    reply_stream << request("protocol");
+    reply_stream << " 405 METHOD NOT ALLOWED\n\n";
+    reply_stream << request("method");
+    reply_stream << " es un comando desconocido\n";
+    return reply_stream.str();
 }
 
 

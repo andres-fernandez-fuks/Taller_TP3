@@ -9,15 +9,18 @@
 #include <atomic>
 #include <string>
 #include <thread>
-#include "../common_src/Socket.h"
 #include "HtmlRequest.h"
 #include "HtmlParser.h"
 #include "InfoHandler.h"
 #include "Thread.h"
+#include "../common_src/Printer.h"
+#include "../common_src/AcceptanceSocket.h"
 
 class ClientHandler : public Thread {
 public:
-    explicit ClientHandler(int socket_fd, std::mutex& mutex);
+    explicit ClientHandler(AcceptanceSocket socket,
+                           InfoHandler& handler_ref,
+                           Printer& printer_ref);
     ~ClientHandler() override;
 
     void sendResponse(const std::string& response);
@@ -25,18 +28,17 @@ public:
     void printResult();
     void closeConnection(bool should_shutdown);
     void stop();
-    void setDefaultResponse(const std::string& default_response);
     void run() override;
     bool isDead();
 
 private:
-    Socket socket = Socket(1);
-    std::stringbuf buffer;
+    AcceptanceSocket socket;
+    std::stringstream buffer;
     std::string output;
-    HtmlParser parser;
-    InfoHandler info_handler;
-    std::mutex& m;
+    Printer& printer;
     std::atomic<bool> finished;
+    InfoHandler& info_handler;
+
     std::string getStringFromBuffer();
     HtmlRequest parseInput();
     void receiveInput();

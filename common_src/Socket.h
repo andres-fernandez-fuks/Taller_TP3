@@ -11,33 +11,21 @@
 #include <sstream>
 #include <mutex>
 
-typedef int (*connection_callback_t)(int sockfd, const struct sockaddr *addr,
-                                     socklen_t addrlen);
+
 
 class Socket {
 public:
-    explicit Socket(int connection_type);
+    Socket() = default;
     ~Socket();
-    int establishConnection(const char* host, const char* port);
-    void setConnection(int fd);
-    int acceptConnection() const;
-    int receiveMessage(std::stringbuf& buffer) const;
-    int sendMessage(std::stringbuf& buffer, size_t len) const;
+    bool isConnected() const;
+
     void closeConnection(bool should_shutdown);
-    void listenToConnections() const;
+
     void shutDownConnection(int mode) const;
 
+protected:
+    int socket_fd = 0;
 private:
-    int socket_fd;
-    struct addrinfo* connection_info = nullptr;
-    struct addrinfo* results = nullptr;
-    struct addrinfo hints = addrinfo();
-    int connection_type;
-    connection_callback_t connection_callback;
-
-    void initializeHints();
-    void setConnectionCallback();
-    int iterateAddressesForConnecting();
     bool is_closed = false;
 };
 
